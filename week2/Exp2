@@ -1,0 +1,34 @@
+from heapq import heappush, heappop
+
+def astar():
+    start = (0, 0)
+    goal = 2
+    pq = [(0, start)]
+    parent = {start: None}
+
+    while pq:
+        _, (a, b) = heappop(pq)
+
+        if a == goal or b == goal:
+            path = []
+            state = (a, b)
+            while state is not None:
+                path.append(state)
+                state = parent[state]
+            return path[::-1]
+
+        moves = {
+            (4, b), (a, 3), (0, b), (a, 0),
+            (a - min(a, 3 - b), b + min(a, 3 - b)),
+            (a + min(b, 4 - a), b - min(b, 4 - a))
+        }
+
+        for m in moves:
+            if m not in parent:
+                parent[m] = (a, b)
+                h = abs(m[0] - goal) + abs(m[1] - goal)
+                heappush(pq, (h, m))
+
+path = astar()
+for i, (a, b) in enumerate(path):
+    print(f"Step {i}: Cup A = {a}, Cup B = {b}")
