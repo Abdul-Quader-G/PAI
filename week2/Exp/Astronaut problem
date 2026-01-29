@@ -1,0 +1,39 @@
+from heapq import heappush, heappop
+
+def astar():
+    start = (0, 0)          # (X, Y)
+    goal = 6                # want 6 litres in X
+    capX, capY = 7, 4
+
+    pq = [(0, start)]
+    parent = {start: None}
+
+    while pq:
+        _, (x, y) = heappop(pq)
+
+        if x == goal:
+            path = []
+            state = (x, y)
+            while state is not None:
+                path.append(state)
+                state = parent[state]
+            return path[::-1]
+
+        moves = {
+            (capX, y),                         # fill X
+            (x, capY),                         # fill Y
+            (0, y),                            # empty X
+            (x, 0),                            # empty Y
+            (x - min(x, capY - y), y + min(x, capY - y)),  # X → Y
+            (x + min(y, capX - x), y - min(y, capX - x))   # Y → X
+        }
+
+        for m in moves:
+            if m not in parent:
+                parent[m] = (x, y)
+                h = abs(m[0] - goal)
+                heappush(pq, (h, m))
+
+path = astar()
+for i, (x, y) in enumerate(path):
+    print(f"Step {i}: Container X = {x} L, Container Y = {y} L")
