@@ -1,0 +1,68 @@
+##A* search for Water Jug using BFS and DFS
+
+from collections import deque
+
+CAP_A, CAP_B, GOAL = 4, 3, 2
+
+def moves(a, b):
+    return {
+        (CAP_A, b), (a, CAP_B), (0, b), (a, 0),
+        (a - min(a, CAP_B - b), b + min(a, CAP_B - b)),
+        (a + min(b, CAP_A - a), b - min(b, CAP_A - a))
+    }
+
+# ---------- DFS ----------
+def dfs():
+    start = (0, 0)
+    parent = {start: None}
+
+    def dfs_util(a, b):
+        if a == GOAL or b == GOAL:
+            return (a, b)
+
+        for m in moves(a, b):
+            if m not in parent:
+                parent[m] = (a, b)
+                res = dfs_util(*m)
+                if res:
+                    return res
+        return None
+
+    end = dfs_util(*start)
+    path = []
+    while end:
+        path.append(end)
+        end = parent[end]
+    return path[::-1]
+
+# ---------- BFS ----------
+def bfs():
+    start = (0, 0)
+    q = deque([start])
+    parent = {start: None}
+
+    while q:
+        a, b = q.popleft()
+        if a == GOAL or b == GOAL:
+            break
+
+        for m in moves(a, b):
+            if m not in parent:
+                parent[m] = (a, b)
+                q.append(m)
+
+    path = []
+    end = (a, b)
+    while end:
+        path.append(end)
+        end = parent[end]
+    return path[::-1]
+
+# ---------- OUTPUT ----------
+print("DFS:")
+for i, (a, b) in enumerate(dfs()):
+    print(f"Step {i}: Cup A = {a}, Cup B = {b}")
+
+print("\nBFS:")
+for i, (a, b) in enumerate(bfs()):
+    print(f"Step {i}: Cup A = {a}, Cup B = {b}")
